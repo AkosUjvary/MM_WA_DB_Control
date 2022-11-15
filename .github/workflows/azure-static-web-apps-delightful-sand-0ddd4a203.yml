@@ -18,6 +18,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: install-pkgs
+        run: npm install
       - name: build-frontend
         run: npm run build
       - name: Build And Deploy
