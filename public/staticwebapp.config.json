@@ -2,11 +2,11 @@
     "routes": [
         {
           "route": "/index",
-          "allowedRoles": ["contributor"]
+          "allowedRoles": ["admin"]
         },
         {
           "route": "/",
-          "allowedRoles": ["contributor"]
+          "allowedRoles": ["admin"]
         }
       ],
       "responseOverrides": {
