@@ -1,10 +1,8 @@
 {
-    "navigationFallback": {
-        "rewrite": "/login.html"
-    },
     "routes": [
         {
           "route": "/*",
+          "statusCode": 404,
           "allowedRoles": ["authenticated"]
         }
       ],
@@ -13,5 +11,8 @@
           "statusCode": 302,
           "redirect": "/.auth/login/github"
         }
-      }
+      },
+      "navigationFallback": {
+        "rewrite": "/login.html"
+    }
 }
