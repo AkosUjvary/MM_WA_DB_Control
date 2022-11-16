@@ -4,6 +4,24 @@
 	import ProcessInfoTable from "./components/ProcessInfoTable.svelte";
 	import { service } from "./service";
     import FileList from "./components/FileList.svelte";
+	import { onMount } from 'svelte';
+
+	let userInfo = undefined;
+
+	onMount(async () => (userInfo = await getUserInfo()));
+
+	async function getUserInfo() {
+		try {
+			const response = await fetch('/.auth/me');
+			const payload = await response.json();
+			const { clientPrincipal } = payload;
+			return clientPrincipal;
+		} catch (error) {
+			console.error('No profile could be found');
+			return undefined;
+		}
+	}
+
 
 	let parametersTable: IParamTable = { rows: [], keys: [] };
 	let processInfos: IProcessInfo[] = [];
@@ -46,6 +64,13 @@
 
 <div id="main">
 	<div id="container_1">
+		{#if userInfo}
+		<div class="user">
+		<p>Welcome</p>
+		<p>{userInfo && userInfo.userDetails}</p>
+		<p>{userInfo && userInfo.identityProvider}</p>
+		</div>
+		{/if}
 		<h3>MM DB LOADER control panel</h3>
 		<h4>Edit Parameters:</h4>
 		<div class="paramButton" on:click={save}>Save</div>
