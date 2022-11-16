@@ -1,0 +1,18 @@
+{
+    "routes": [
+        {
+          "route": "/*",
+          "statusCode": 404,
+          "allowedRoles": ["authenticated"]
+        }
+      ],
+      "responseOverrides": {
+        "401": {
+          "statusCode": 302,
+          "redirect": "/.auth/login/github"
+        }
+      },
+      "navigationFallback": {
+        "rewrite": "/login.html"
+    }
+}
