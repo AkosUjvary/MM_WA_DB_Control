@@ -2,10 +2,16 @@
     "navigationFallback": {
         "rewrite": "/login.html"
     },
-    "routes":[
+    "routes": [
         {
-            "route": "/index",
-            "allowedRoles": ["authenticated"]
+          "route": "/*",
+          "allowedRoles": ["authenticated"]
         }
-    ]
+      ],
+      "responseOverrides": {
+        "401": {
+          "statusCode": 302,
+          "redirect": "/.auth/login/github"
+        }
+      }
 }
