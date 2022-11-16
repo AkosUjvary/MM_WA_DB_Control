@@ -2,7 +2,6 @@
     "routes": [
         {
           "route": "/*",
-          "statusCode": 404,
           "allowedRoles": ["authenticated"]
         }
       ],
