@@ -2,17 +2,17 @@
     "routes": [
         {
           "route": "/index",
-          "allowedRoles": ["authenticated"],
+          "allowedRoles": ["contributor"]
         },
         {
           "route": "/",
-          "allowedRoles": ["authenticated"]
+          "allowedRoles": ["contributor"]
         }
       ],
       "responseOverrides": {
         "401": {
           "statusCode": 302,
-          "redirect": "/.auth/login/github"
+          "redirect": "/login.html"
         }
       },
       "navigationFallback": {
