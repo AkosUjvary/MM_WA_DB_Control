@@ -38,12 +38,12 @@
 	}
 	
 	let currentFolder: string
-	function loadFiles(folderMap) {
-		service.listfiles(folderMap).then(response => {
+	function loadFiles(folder_nm) {
+		service.listfiles({"folder" : folder_nm}).then(response => {
             if (response.ok) {
                 response.json().then(result => {
                     files = result;
-					currentFolder = folderMap.folder
+					currentFolder = folder_nm
                 });
             }
         });
@@ -87,11 +87,11 @@
 				<thead>
 					<tr><th class="header-label">Folders</th></tr>
 				</thead>				
-				<tr><td><div on:click={() => loadFiles({"folder": "load_to_DB"})}>Load to DB</div></td></tr>
-				<tr><td><div on:click={() => loadFiles({"folder": "logs"})}>Logs</div></td></tr>
-				<tr><td><div on:click={() => loadFiles({"folder": "output/biased_list"})}>Output / Biased List</div></td></tr>
-				<tr><td><div on:click={() => loadFiles({"folder": "output/filmlist_imdbid"})}>Output / Imdb List</div></td></tr>
-				<tr><td><div on:click={() => loadFiles({"folder": "output/filmlist_omdb"})}>Output / Omdb List</div></td></tr>				
+				<tr><td><div on:click={() => loadFiles("load_to_DB")}>Load to DB</div></td></tr>
+				<tr><td><div on:click={() => loadFiles("logs")}>Logs</div></td></tr>
+				<tr><td><div on:click={() => loadFiles("output/biased_list")}>Output / Biased List</div></td></tr>
+				<tr><td><div on:click={() => loadFiles("output/filmlist_imdbid")}>Output / Imdb List</div></td></tr>
+				<tr><td><div on:click={() => loadFiles("output/filmlist_omdb")}>Output / Omdb List</div></td></tr>				
 			</table>
 		</div>
 		<FileList files={files} folder={currentFolder} bind:selectedTable={selectedTable}></FileList>

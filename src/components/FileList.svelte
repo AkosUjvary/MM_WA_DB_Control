@@ -9,7 +9,7 @@
 
 
     function viewFiles(file) {
-        service.view(file).then((response)=>{
+        service.view({"file": file}).then((response)=>{
             if(response.ok){
                 response.json().then((result) => {
                     const keys=Object.keys(result[0]);
@@ -27,7 +27,7 @@
                 <tr><th class="header-label">Files</th></tr>
             </thead>
             {#each files as file}
-                <tr><td><div on:click={() => viewFiles({"file": `${folder}/${file}`})}>{file}</div></td></tr>
+                <tr><td><div on:click={() => viewFiles(`${folder}/${file}`)}>{file}</div></td></tr>
             {/each}
         </table>
     </div>
