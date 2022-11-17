@@ -66,9 +66,7 @@
 	<div id="container_1">
 		{#if userInfo}
 		<div class="user">
-		<p>Welcome</p>
-		<p>{userInfo && userInfo.userDetails}</p>
-		<p>{userInfo && userInfo.identityProvider}</p>
+		<p>Welcome {userInfo && userInfo.userDetails} ({userInfo && userInfo.identityProvider})</p>
 		</div>
 		{/if}
 		<h3>MM DB LOADER control panel</h3>
