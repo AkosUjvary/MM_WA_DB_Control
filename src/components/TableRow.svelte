@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { IParamTableRow } from "../types";
+    import type { ITableRow } from "../types";
 
-    export let data: IParamTableRow;
+    export let data: ITableRow;
 </script>
 
 <tr class="tr-inputs">

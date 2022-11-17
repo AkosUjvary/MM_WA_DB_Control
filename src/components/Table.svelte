@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { IParamTable } from "../types";
-  import ParamTableRow from "./ParamTableRow.svelte";
+  import type { ITable } from "../types";
+  import TableRow from "./TableRow.svelte";
 
-  export let data: IParamTable = { rows: [], keys: [] };
+  export let data: ITable = { rows: [], keys: [] };
 </script>
 
 <div>
@@ -16,7 +16,7 @@
     </thead>
     <tbody>
       {#each data.rows as row}
-        <ParamTableRow data={row} />
+        <TableRow data={row} />
       {/each}
     </tbody>
   </table>
