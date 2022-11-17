@@ -1,10 +1,10 @@
 
-export interface IParamTableRow {
+export interface ITableRow {
     [key: string]: string | undefined;
 };
 
-export interface IParamTable {
-    rows: IParamTableRow[];
+export interface ITable {
+    rows: ITableRow[];
     keys: string[];
 }
 

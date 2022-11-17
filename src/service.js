@@ -16,7 +16,7 @@ export const service = {
     },
     view: (body) => {
         if (!body) {
-            body = {"file":"output/filmlist_omdb/filmlist_omdb_12_1970_1974_global"};
+            body = {"file":"output/filmlist_omdb/filmlist_omdb_999_2022_2022_global"};
         }
 
         return fetch(encodeURI(BASE_URL + "fnc=viewfile"), { method: 'post', body: JSON.stringify(body) });
