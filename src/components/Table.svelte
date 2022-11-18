@@ -16,7 +16,7 @@
     </thead>
     <tbody>
       {#each data.rows as row}
-        <TableRow data={row} />
+        <TableRow bind:data={row} bind:table={data}/>
       {/each}
     </tbody>
   </table>

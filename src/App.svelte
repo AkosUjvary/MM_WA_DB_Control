@@ -23,6 +23,7 @@
 
 
 	let parametersTable: ITable = { rows: [], keys: [] };
+	let editorTableSize=0;
 	let selectedTable: ITable = { rows: [], keys: [] }
 	let files = [];
 
@@ -30,13 +31,33 @@
 		service.load().then((response) => {
 			if (response.ok) {
 				response.json().then((result) => {
-					const keys = Object.keys(result[0]);
-					parametersTable = { rows: result, keys: keys };
+					const keys =["editor_row_id"].concat(Object.keys(result[0]));
+					let rowsWithID = [...result];
+					for (var i in rowsWithID){
+						rowsWithID[i]=Object.assign({}, {"editor_row_id":(parseInt(i)+1).toString()}, rowsWithID[i])
+					}
+					parametersTable = { rows: rowsWithID, keys: keys };
+					editorTableSize=keys.length;
 				});
 			}
 		});
 	}
-	
+
+	function newRow(){
+		let emptyRow={...parametersTable.rows[0]};
+		for (var key in emptyRow){
+			if (key=="editor_row_id"){
+				editorTableSize=editorTableSize+1;
+				emptyRow[key]=(editorTableSize).toString()
+			}
+			else
+			emptyRow[key] = ""
+		}
+		parametersTable.rows.push(emptyRow);
+		parametersTable=parametersTable;
+	}
+
+
 	let currentFolder: string
 	function loadFiles(folder_nm) {
 		service.listfiles({"folder" : folder_nm}).then(response => {
@@ -73,9 +94,10 @@
 		<h4>Edit Parameters:</h4>
 		<div class="paramButton" on:click={save}>Save</div>
 		<div class="paramButton" on:click={load}>Load</div>
+		<div class="paramButton" on:click={newRow}>New row</div>
 	</div>
 	<div id="container_2">
-		<Table data={parametersTable} />
+		<Table bind:data={parametersTable} />
 	</div>
 
 	<div id="container_3"><h4>View Files:</h4></div>
