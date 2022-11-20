@@ -4,6 +4,7 @@
 	import { service } from "./service";
     import FileList from "./components/FileList.svelte";
 	import { onMount } from 'svelte';
+    import { xlink_attr } from "svelte/internal";
 
 	let userInfo = undefined;
 
@@ -22,13 +23,13 @@
 	}
 
 
-	let parametersTable: ITable = { rows: [], keys: [] };
-	let editorTableSize=0;
+	let editTable: ITable = { rows: [], keys: [] };
+	let maxTableID=0;
 	let selectedTable: ITable = { rows: [], keys: [] }
 	let files = [];
 
 	function loadParameters() {
-		service.load().then((response) => {
+		service.loadParam().then((response) => {
 			if (response.ok) {
 				response.json().then((result) => {
 					const keys =["editor_row_id"].concat(Object.keys(result[0]));
@@ -36,25 +37,42 @@
 					for (var i in rowsWithID){
 						rowsWithID[i]=Object.assign({}, {"editor_row_id":(parseInt(i)+1).toString()}, rowsWithID[i])
 					}
-					parametersTable = { rows: rowsWithID, keys: keys };
-					editorTableSize=keys.length;
+					editTable = { rows: rowsWithID, keys: keys };
+					maxTableID=editTable.rows.length;
+				});
+			}
+		});
+	}
+
+	function loadMapping() {
+		service.loadMapping().then((response) => {
+			if (response.ok) {
+				response.json().then((result) => {
+					const keys =["editor_row_id"].concat(Object.keys(result[0]));
+					let rowsWithID = [...result];
+					for (var i in rowsWithID){
+						rowsWithID[i]=Object.assign({}, {"editor_row_id":(parseInt(i)+1).toString()}, rowsWithID[i])
+					}
+					editTable = { rows: rowsWithID, keys: keys };
+					maxTableID=editTable.rows.length;
 				});
 			}
 		});
 	}
 
 	function newRow(){
-		let emptyRow={...parametersTable.rows[0]};
+		let maxTableID=Math.max(...editTable.rows.map(x=>parseInt(x["editor_row_id"])));
+		let emptyRow={...editTable.rows[0]};
 		for (var key in emptyRow){
 			if (key=="editor_row_id"){
-				editorTableSize=editorTableSize+1;
-				emptyRow[key]=(editorTableSize).toString()
+				maxTableID++;
+				emptyRow[key]=(maxTableID).toString()
 			}
 			else
 			emptyRow[key] = ""
 		}
-		parametersTable.rows.push(emptyRow);
-		parametersTable=parametersTable;
+		editTable.rows.push(emptyRow);
+		editTable=editTable;
 	}
 
 
@@ -70,17 +88,43 @@
         });
 	}
 
-	function load() {
-		loadParameters();
+	function load(table) {
+		if (table=="parameter"){
+			loadParameters();
+		}
+		else if (table=="mapping") {
+			loadMapping();
+		}
 	}
 
-	function save() {
-		service.save(JSON.stringify(parametersTable.rows)).then((response) => {
+	function saveParam() {
+		let saveTable={...editTable}
+		saveTable.keys=saveTable.keys.splice(1,saveTable.keys.length)
+		for (var i in saveTable.rows){
+					delete saveTable.rows[i].editor_row_id
+			}
+
+		service.saveParam(JSON.stringify(editTable.rows)).then((response) => {
 			if (response.ok) {
 				alert("Mentés sikeres!");
 			}
 		});
 	}
+
+	function saveMapping() {
+		let saveTable={...editTable}
+		saveTable.keys=saveTable.keys.splice(1,saveTable.keys.length)
+		for (var i in saveTable.rows){
+					delete saveTable.rows[i].editor_row_id
+			}
+
+		service.saveMapping(JSON.stringify(editTable.rows)).then((response) => {
+			if (response.ok) {
+				alert("Mentés sikeres!");
+			}
+		});
+	}
+
 </script>
 
 <div id="main">
@@ -92,12 +136,17 @@
 		{/if}
 		<h3>MM DB LOADER control panel</h3>
 		<h4>Edit Parameters:</h4>
-		<div class="paramButton" on:click={save}>Save</div>
-		<div class="paramButton" on:click={load}>Load</div>
+		<div class="paramButton" on:click={saveParam}>Save P</div>
+		<div class="paramButton" on:click={() => load("parameter")}>Load P</div>
+
+		<div class="paramButton" on:click={saveMapping}>Save M</div>
+		<div class="paramButton" on:click={() => load("mapping")}>Load M</div>
+
 		<div class="paramButton" on:click={newRow}>New row</div>
+
 	</div>
 	<div id="container_2">
-		<Table bind:data={parametersTable} />
+		<Table bind:data={editTable} rowType="edit"/>
 	</div>
 
 	<div id="container_3"><h4>View Files:</h4></div>
@@ -118,7 +167,7 @@
 	</div>
 	<div id="container_5" />
 	<div id="container_6">
-		<Table data={selectedTable} />
+		<Table data={selectedTable} rowType="view" />
 	</div>
 
 	<div id="container_7">MM - 2022</div>
