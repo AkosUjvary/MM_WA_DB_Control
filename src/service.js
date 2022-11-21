@@ -1,11 +1,17 @@
 export const BASE_URL = "https://mm-dbloader.azurewebsites.net/api/mm-wa-api?code=0I1DbdzAAKItPOJK3RSYwGojK8UhLi4dX_5P4vCZXEg-AzFu-kuMcw==&";
 
 export const service = {
-    load: () => {
+    loadParam: () => {
         return fetch(encodeURI(BASE_URL + "fnc=lparam"), { method: 'post' });
     },
-    save: (body) => {
+    saveParam: (body) => {
         return fetch(encodeURI(BASE_URL + "fnc=sparam"), { method: 'post', body: JSON.stringify(body) });
+    },
+    loadMapping: () => {
+        return fetch(encodeURI(BASE_URL + "fnc=lmapping"), { method: 'post' });
+    },
+    saveMapping: (body) => {
+        return fetch(encodeURI(BASE_URL + "fnc=smapping"), { method: 'post', body: JSON.stringify(body) });
     },
     listfiles: (body) => {
         if (!body) {
