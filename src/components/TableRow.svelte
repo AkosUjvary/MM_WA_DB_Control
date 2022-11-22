@@ -16,7 +16,7 @@
 
 <tr class="tr-inputs">
     {#if rowType == "edit"}
-        <th><div on:click={() => deleteRow(data["editor_row_id"])}>-</div></th>
+        <th><div class="td_Del" on:click={() => deleteRow(data["editor_row_id"])}>-</div></th>
     {/if}
     {#each Object.keys(data) as key}
     {#if key != "editor_row_id"}

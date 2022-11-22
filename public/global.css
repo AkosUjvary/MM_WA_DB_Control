@@ -12,6 +12,14 @@ body {
     background-color: rgb(145, 83, 83);
   }
   
+  .td_Del {
+    cursor:pointer
+  }
+
+  .td_Sel {
+    cursor:pointer
+  }
+
   #container_1 {
   
     padding-top: 20px;

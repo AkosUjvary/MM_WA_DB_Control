@@ -156,14 +156,14 @@
 				<thead>
 					<tr><th class="header-label">Folders</th></tr>
 				</thead>				
-				<tr><td><div on:click={() => loadFiles("load_to_DB")}>Load to DB</div></td></tr>
-				<tr><td><div on:click={() => loadFiles("logs")}>Logs</div></td></tr>
-				<tr><td><div on:click={() => loadFiles("output/biased_list")}>Output / Biased List</div></td></tr>
-				<tr><td><div on:click={() => loadFiles("output/filmlist_imdbid")}>Output / Imdb List</div></td></tr>
-				<tr><td><div on:click={() => loadFiles("output/filmlist_omdb")}>Output / Omdb List</div></td></tr>				
+				<tr><td><div class="td_Sel" on:click={() => loadFiles("load_to_DB")}>Load to DB</div></td></tr>
+				<tr><td><div class="td_Sel" on:click={() => loadFiles("logs")}>Logs</div></td></tr>
+				<tr><td><div class="td_Sel" on:click={() => loadFiles("output/biased_list")}>Output / Biased List</div></td></tr>
+				<tr><td><div class="td_Sel" on:click={() => loadFiles("output/filmlist_imdbid")}>Output / Imdb List</div></td></tr>
+				<tr><td><div class="td_Sel" on:click={() => loadFiles("output/filmlist_omdb")}>Output / Omdb List</div></td></tr>				
 			</table>
 		</div>
-		<FileList files={files} folder={currentFolder} bind:selectedTable={selectedTable}></FileList>
+		<FileList bind:files={files} bind:folder={currentFolder} bind:selectedTable={selectedTable}></FileList>
 	</div>
 	<div id="container_5" />
 	<div id="container_6">
