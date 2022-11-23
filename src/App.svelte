@@ -25,8 +25,10 @@
 
 	let editTable: ITable = { rows: [], keys: [] };
 	let maxTableID=0;
-	let selectedTable: ITable = { rows: [], keys: [] }
+	export let selectedTable: ITable = { rows: [], keys: [] }
 	let files = [];
+
+	$: selectedTable, max_width(selectedTable, 'view');
 
 	function loadParameters() {
 		service.loadParam().then((response) => {
@@ -39,6 +41,7 @@
 					}
 					editTable = { rows: rowsWithID, keys: keys };
 					maxTableID=editTable.rows.length;
+					max_width(editTable, 'edit');
 				});
 			}
 		});
@@ -55,6 +58,7 @@
 					}
 					editTable = { rows: rowsWithID, keys: keys };
 					maxTableID=editTable.rows.length;
+					max_width(editTable, 'edit');
 				});
 			}
 		});
@@ -89,8 +93,8 @@
 	}
 
 	function load(table) {
-		if (table=="parameter"){
-			loadParameters();
+		if (table=="parameter"){			
+			loadParameters();				
 		}
 		else if (table=="mapping") {
 			loadMapping();
@@ -110,6 +114,50 @@
 			}
 		});
 	}
+
+	let min_width_class_edit:{};
+	let min_width_class_view:{};
+	let max_width_detail:Object[];
+ 
+
+	function max_width(table, type){
+		if (type=='view') {min_width_class_view=new Object();}	
+		if (type=='edit') {min_width_class_edit=new Object();}	
+		max_width_detail= new Array(new Object());
+		for (var curr_key in table.keys){
+			let max_td_width: number=0;
+			for (var i in table.rows){
+				//alert((table.keys[curr_key]).toString());
+				//alert((table.rows[i][table.keys[curr_key]]).toString());
+			if (max_td_width<table.rows[i][table.keys[curr_key]].length){
+				max_td_width=table.rows[i][table.keys[curr_key]].length
+				}			
+			}
+			max_width_detail.push({"key":table.keys[curr_key], "max_width": max_td_width}) 
+			
+			let width_class="";
+			if (max_td_width>10) {
+				width_class="td_min_100"
+			}
+			if (max_td_width>15) {
+				width_class="td_min_150"
+			}
+			if (max_td_width>20) {
+				width_class="td_min_200"
+			}
+			if (max_td_width>30) {
+				width_class="td_min_300"
+			}
+
+			if (max_td_width>50) {
+				width_class="td_min_500"
+			}
+		
+			if (type=='view') {min_width_class_view[table.keys[curr_key]]= width_class;}	
+			if (type=='edit') {min_width_class_edit[table.keys[curr_key]]= width_class;}	
+		}
+	}
+
 
 	function saveMapping() {
 		let saveTable={...editTable}
@@ -146,7 +194,7 @@
 
 	</div>
 	<div id="container_2">
-		<Table bind:data={editTable} rowType="edit"/>
+		<Table bind:data={editTable} bind:min_width_class={min_width_class_edit} rowType="edit"/>
 	</div>
 
 	<div id="container_3"><h4>View Files:</h4></div>
@@ -167,7 +215,7 @@
 	</div>
 	<div id="container_5" />
 	<div id="container_6">
-		<Table data={selectedTable} rowType="view" />
+		<Table data={selectedTable} min_width_class={min_width_class_view} rowType="view" />
 	</div>
 
 	<div id="container_7">MM - 2022</div>
