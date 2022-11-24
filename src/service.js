@@ -26,5 +26,8 @@ export const service = {
         }
 
         return fetch(encodeURI(BASE_URL + "fnc=viewfile"), { method: 'post', body: JSON.stringify(body) });
+    },
+    deleteBlob: (body) => {
+        return fetch(encodeURI(BASE_URL + "fnc=delblob"), { method: 'post', body: JSON.stringify(body) })
     }
 };
