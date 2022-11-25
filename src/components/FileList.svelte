@@ -1,19 +1,34 @@
 <script lang="ts">
     import { component_subscribe } from "svelte/internal";
     export let folder = "";
+    export let rowType = "";
     export let files = [];
     export let selectedTable: ITable;
+    
     import { service } from "../service";
     import type { ITable, IProcessInfo } from "../types";
 
 
 
-    function viewFiles(file) {
+    function viewFiles(file) {        
         service.view({"file": file}).then((response)=>{
             if(response.ok){
                 response.json().then((result) => {
-                    const keys=Object.keys(result[0]);
-                    selectedTable={ rows:result, keys:keys }
+
+                    if (file==="load_to_DB/load_filmlist_to_db"){
+                        rowType="corr";
+                        const keys =["corr_row_id"].concat(Object.keys(result[0]));
+                        let rowsWithID = [...result];
+                        for (var i in rowsWithID){
+                            rowsWithID[i]=Object.assign({}, {"corr_row_id":(parseInt(i)+1).toString()}, rowsWithID[i])
+                        }
+                        selectedTable = { rows: rowsWithID, keys: keys };
+                    } 
+                    else {
+                        rowType="view";
+                        const keys=Object.keys(result[0]);
+                        selectedTable={ rows:result, keys:keys }
+                    }
                 })
             }
         })

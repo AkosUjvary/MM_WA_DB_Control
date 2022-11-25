@@ -4,6 +4,9 @@
   import { onMount } from 'svelte';
 
   export let data: ITable = { rows: [], keys: [] };
+
+  export let corrTable: ITable = { rows: [], keys: [] };
+
   export let rowType: string;
 
   export let min_width_class;
@@ -16,13 +19,13 @@
     <thead>
       <tr>
         {#each data.keys as key}
-          <th class="header-label {min_width_class[key]}">{key.replace("editor_row_id", "")}</th>     
+          <th class="header-label {min_width_class[key]}">{key.replace("editor_row_id", "").replace("corr_row_id", "")}</th>     
         {/each}
       </tr>
     </thead>
     <tbody>
       {#each data.rows as row}
-        <TableRow bind:data={row} bind:table={data} rowType={rowType}/>
+        <TableRow bind:data={row} bind:table={data} rowType={rowType} bind:corrTable={corrTable}/>
       {/each}
     </tbody>
   </table>

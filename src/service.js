@@ -13,6 +13,12 @@ export const service = {
     saveMapping: (body) => {
         return fetch(encodeURI(BASE_URL + "fnc=smapping"), { method: 'post', body: JSON.stringify(body) });
     },
+    loadCorr: () => {
+        return fetch(encodeURI(BASE_URL + "fnc=lcorrections"), { method: 'post' });
+    },
+    saveCorr: (body) => {
+        return fetch(encodeURI(BASE_URL + "fnc=scorrections"), { method: 'post', body: JSON.stringify(body) });
+    },
     listfiles: (body) => {
         if (!body) {
             body = {"folder": "filmlist_imdbid"};

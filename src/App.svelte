@@ -26,9 +26,85 @@
 	let editTable: ITable = { rows: [], keys: [] };
 	let maxTableID=0;
 	export let selectedTable: ITable = { rows: [], keys: [] }
+
+	export let corrTable: ITable = { rows: [], keys: [] }
+
+	export let loadCorrBaseTable: ITable = { rows: [], keys: [] }
+
+	
+	
 	let files = [];
 
 	$: selectedTable, max_width(selectedTable, 'view');
+	
+	$: if((corrTable.keys).length>0) { saveCorrTableFromAddNewRow()};
+
+
+	function saveCorrTableFromAddNewRow() {
+		service.loadCorr().then((response) => {
+			if (response.ok) {
+				response.json().then((result) => {
+										
+					let saveTable={...corrTable}
+					saveTable.keys=saveTable.keys.splice(1,saveTable.keys.length)
+					for (var i in saveTable.rows){
+								delete saveTable.rows[i].corr_row_id
+						}
+					if (result.length>0) {
+						const keys =Object.keys(result[0]);									
+						loadCorrBaseTable = { rows: result, keys: keys };
+						saveTable.rows=loadCorrBaseTable.rows.concat(saveTable.rows);
+					}					
+					
+					service.saveCorr(JSON.stringify(saveTable.rows)).then((response) => {
+						if (response.ok) {
+							alert("Hozzáadás korrekció táblába sikeres!");
+						}
+					loadCorrTable();
+		});
+
+		corrTable={ rows: [], keys: [] };
+
+				});
+			}
+		});
+
+		
+	}
+
+	function saveCorr() {
+		let saveTable={...editTable}
+		saveTable.keys=saveTable.keys.splice(1,saveTable.keys.length)
+		for (var i in saveTable.rows){
+					delete saveTable.rows[i].editor_row_id
+			}
+
+		service.saveCorr(JSON.stringify(saveTable.rows)).then((response) => {
+			if (response.ok) {
+				alert("Korrekció tábla mentés sikeres!");
+			}
+		});
+	}
+ 
+	function loadCorrTable() {
+		service.loadCorr().then((response) => {
+			if (response.ok) {
+				response.json().then((result) => {
+					if (result.length>0) {
+						const keys =["editor_row_id"].concat(Object.keys(result[0]));
+						let rowsWithID = [...result];
+						for (var i in rowsWithID){
+							rowsWithID[i]=Object.assign({}, {"editor_row_id":(parseInt(i)+1).toString()}, rowsWithID[i])
+						}
+						editTable = { rows: rowsWithID, keys: keys };
+						maxTableID=editTable.rows.length;
+						max_width(editTable, 'edit');
+					}
+					else {alert("Korrekciós tábla nem található!")}
+				});
+			}
+		});
+	}
 
 	function loadParameters() {
 		service.loadParam().then((response) => {
@@ -99,6 +175,9 @@
 		else if (table=="mapping") {
 			loadMapping();
 		}
+		else if (table=="corr") {
+			loadCorrTable();
+		}
 	}
 
 	function saveParam() {
@@ -114,6 +193,8 @@
 			}
 		});
 	}
+
+	let rowType:string;
 
 	let min_width_class_edit:{};
 	let min_width_class_view:{};
@@ -190,11 +271,14 @@
 		<div class="paramButton" on:click={saveMapping}>Save M</div>
 		<div class="paramButton" on:click={() => load("mapping")}>Load M</div>
 
+		<div class="paramButton" on:click={saveCorr}>Save K</div>
+		<div class="paramButton" on:click={() => load("corr")}>Load K</div>
+
 		<div class="paramButton" on:click={newRow}>New row</div>
 
 	</div>
 	<div id="container_2">
-		<Table bind:data={editTable} bind:min_width_class={min_width_class_edit} rowType="edit"/>
+		<Table bind:data={editTable} bind:min_width_class={min_width_class_edit} rowType="edit" bind:corrTable={corrTable}/>
 	</div>
 
 	<div id="container_3"><h4>View Files:</h4></div>
@@ -211,11 +295,11 @@
 				<tr><td><div class="td_Sel" on:click={() => loadFiles("output/filmlist_omdb")}>Output / Omdb List</div></td></tr>				
 			</table>
 		</div>
-		<FileList bind:files={files} bind:folder={currentFolder} bind:selectedTable={selectedTable}></FileList>
+		<FileList bind:files={files} bind:folder={currentFolder} bind:selectedTable={selectedTable} bind:rowType={rowType}></FileList>
 	</div>
 	<div id="container_5" />
 	<div id="container_6">
-		<Table data={selectedTable} min_width_class={min_width_class_view} rowType="view" />
+		<Table data={selectedTable} min_width_class={min_width_class_view} rowType={rowType} bind:corrTable={corrTable} />
 	</div>
 
 	<div id="container_7">MM - 2022</div>
