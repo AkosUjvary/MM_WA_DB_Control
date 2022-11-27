@@ -45,18 +45,23 @@
 			if (response.ok) {
 				response.json().then((result) => {
 										
-					let saveTable={...corrTable}
-					saveTable.keys=saveTable.keys.splice(1,saveTable.keys.length)
-					for (var i in saveTable.rows){
-								delete saveTable.rows[i].corr_row_id
+					let saveTableCorr: ITable = { rows: [], keys: [] }
+					saveTableCorr.keys=corrTable.keys.splice(1,corrTable.keys.length)
+					for (var i in corrTable.rows){
+						saveTableCorr.rows.push({})
+							for (var x in corrTable.rows[i]) {								
+								if (x != "corr_row_id") {
+									saveTableCorr.rows[i][x]= corrTable.rows[i][x]																		
+								}
+							}							   
 						}
 					if (result.length>0) {
 						const keys =Object.keys(result[0]);									
 						loadCorrBaseTable = { rows: result, keys: keys };
-						saveTable.rows=loadCorrBaseTable.rows.concat(saveTable.rows);
+						saveTableCorr.rows=loadCorrBaseTable.rows.concat(saveTableCorr.rows);
 					}					
 					
-					service.saveCorr(JSON.stringify(saveTable.rows)).then((response) => {
+					service.saveCorr(JSON.stringify(saveTableCorr.rows)).then((response) => {
 						if (response.ok) {
 							alert("Hozzáadás korrekció táblába sikeres!");
 						}

@@ -14,7 +14,9 @@
 
     function addRow(id) {	
         corrTable.keys=table.keys;
-        corrTable.rows=corrTable.rows.concat(table.rows.filter(x=>x["corr_row_id"]==id.toString()));
+        let c_table={...table}
+        corrTable.rows=corrTable.rows.concat(c_table.rows.filter(x=>x["corr_row_id"]==id.toString()));
+        let d_table={...table}
         corrTable=corrTable;
 	}
 
