@@ -8,14 +8,14 @@
     export let rowType: string;
  
     function deleteRow(id) {
-		table.rows=table.rows.filter(x=>x["editor_row_id"]!=id.toString());
+		table.rows=table.rows.filter(x=>x["editor_row_id"]!==id);
         table=table;
 	}
 
     function addRow(id) {	
         corrTable.keys=table.keys;
         let c_table={...table}
-        corrTable.rows=corrTable.rows.concat(c_table.rows.filter(x=>x["corr_row_id"]==id.toString()));
+        corrTable.rows=corrTable.rows.concat(c_table.rows.filter(x=>x["corr_row_id"]===id));
         let d_table={...table}
         corrTable=corrTable;
 	}

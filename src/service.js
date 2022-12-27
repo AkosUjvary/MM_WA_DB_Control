@@ -1,4 +1,5 @@
 export const BASE_URL = "https://mm-dbloader.azurewebsites.net/api/mm-wa-api?code=0I1DbdzAAKItPOJK3RSYwGojK8UhLi4dX_5P4vCZXEg-AzFu-kuMcw==&";
+//export const BASE_URL = "http://localhost:7071/api/mm-wa-api?"
 
 export const service = {
     loadParam: () => {
@@ -18,6 +19,9 @@ export const service = {
     },
     saveCorr: (body) => {
         return fetch(encodeURI(BASE_URL + "fnc=scorrections"), { method: 'post', body: JSON.stringify(body) });
+    },
+    saveAddedCorr: (body) => {
+        return fetch(encodeURI(BASE_URL + "fnc=saddedcorrs"), { method: 'post', body: JSON.stringify(body) });
     },
     listfiles: (body) => {
         if (!body) {

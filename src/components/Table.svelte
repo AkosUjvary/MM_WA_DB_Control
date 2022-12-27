@@ -19,7 +19,7 @@
     <thead>
       <tr>
         {#each data.keys as key}
-          <th class="header-label {min_width_class[key]}">{key.replace("editor_row_id", "").replace("corr_row_id", "")}</th>     
+          <th class="header-label {min_width_class[key]}">{(key === "editor_row_id" || key === "corr_row_id") ? "": key}</th>     
         {/each}
       </tr>
     </thead>

@@ -25,11 +25,11 @@
 
 	let editTable: ITable = { rows: [], keys: [] };
 	let maxTableID=0;
-	export let selectedTable: ITable = { rows: [], keys: [] }
+	let selectedTable: ITable = { rows: [], keys: [] }
 
-	export let corrTable: ITable = { rows: [], keys: [] }
+	let corrTable: ITable = { rows: [], keys: [] }
 
-	export let loadCorrBaseTable: ITable = { rows: [], keys: [] }
+	let loadCorrBaseTable: ITable = { rows: [], keys: [] }
 
 	
 	
@@ -61,7 +61,7 @@
 						saveTableCorr.rows=loadCorrBaseTable.rows.concat(saveTableCorr.rows);
 					}					
 					
-					service.saveCorr(JSON.stringify(saveTableCorr.rows)).then((response) => {
+					service.saveAddedCorr(JSON.stringify(saveTableCorr.rows)).then((response) => {
 						if (response.ok) {
 							alert("Hozzáadás korrekció táblába sikeres!");
 						}
@@ -79,7 +79,9 @@
 
 	function saveCorr() {
 		let saveTable={...editTable}
-		saveTable.keys=saveTable.keys.splice(1,saveTable.keys.length)
+		
+		saveTable.keys=saveTable.keys.filter(keys=> keys !="editor_row_id")
+
 		for (var i in saveTable.rows){
 					delete saveTable.rows[i].editor_row_id
 			}
@@ -97,10 +99,9 @@
 				response.json().then((result) => {
 					if (result.length>0) {
 						const keys =["editor_row_id"].concat(Object.keys(result[0]));
-						let rowsWithID = [...result];
-						for (var i in rowsWithID){
-							rowsWithID[i]=Object.assign({}, {"editor_row_id":(parseInt(i)+1).toString()}, rowsWithID[i])
-						}
+						const rowsWithID = result.map((row, index) =>  { return {
+								 "editor_row_id": (parseInt(index) + 1).toString(), ...row
+							}});
 						editTable = { rows: rowsWithID, keys: keys };
 						maxTableID=editTable.rows.length;
 						max_width(editTable, 'edit');
@@ -116,10 +117,9 @@
 			if (response.ok) {
 				response.json().then((result) => {
 					const keys =["editor_row_id"].concat(Object.keys(result[0]));
-					let rowsWithID = [...result];
-					for (var i in rowsWithID){
-						rowsWithID[i]=Object.assign({}, {"editor_row_id":(parseInt(i)+1).toString()}, rowsWithID[i])
-					}
+					const rowsWithID = result.map((row, index) =>  { return {
+								 "editor_row_id": (parseInt(index) + 1).toString(), ...row
+							}});				
 					editTable = { rows: rowsWithID, keys: keys };
 					maxTableID=editTable.rows.length;
 					max_width(editTable, 'edit');
@@ -133,10 +133,11 @@
 			if (response.ok) {
 				response.json().then((result) => {
 					const keys =["editor_row_id"].concat(Object.keys(result[0]));
-					let rowsWithID = [...result];
-					for (var i in rowsWithID){
-						rowsWithID[i]=Object.assign({}, {"editor_row_id":(parseInt(i)+1).toString()}, rowsWithID[i])
-					}
+
+					const rowsWithID = result.map((row, index) =>  { return {
+								 "editor_row_id": (parseInt(index) + 1).toString(), ...row
+							}});
+
 					editTable = { rows: rowsWithID, keys: keys };
 					maxTableID=editTable.rows.length;
 					max_width(editTable, 'edit');
@@ -173,21 +174,10 @@
         });
 	}
 
-	function load(table) {
-		if (table=="parameter"){			
-			loadParameters();				
-		}
-		else if (table=="mapping") {
-			loadMapping();
-		}
-		else if (table=="corr") {
-			loadCorrTable();
-		}
-	}
-
 	function saveParam() {
-		let saveTable={...editTable}
-		saveTable.keys=saveTable.keys.splice(1,saveTable.keys.length)
+		let saveTable={...editTable}		
+		saveTable.keys=saveTable.keys.filter(keys=> keys !="editor_row_id")
+
 		for (var i in saveTable.rows){
 					delete saveTable.rows[i].editor_row_id
 			}
@@ -247,7 +237,8 @@
 
 	function saveMapping() {
 		let saveTable={...editTable}
-		saveTable.keys=saveTable.keys.splice(1,saveTable.keys.length)
+		saveTable.keys=saveTable.keys.filter(keys=> keys !="editor_row_id")
+ 
 		for (var i in saveTable.rows){
 					delete saveTable.rows[i].editor_row_id
 			}
@@ -271,13 +262,13 @@
 		<h3>MM DB LOADER control panel</h3>
 		<h4>Edit Parameters:</h4>
 		<div class="paramButton" on:click={saveParam}>Save P</div>
-		<div class="paramButton" on:click={() => load("parameter")}>Load P</div>
+		<div class="paramButton" on:click={() => loadParameters()}>Load P</div>
 
 		<div class="paramButton" on:click={saveMapping}>Save M</div>
-		<div class="paramButton" on:click={() => load("mapping")}>Load M</div>
+		<div class="paramButton" on:click={() => loadMapping()}>Load M</div>
 
 		<div class="paramButton" on:click={saveCorr}>Save K</div>
-		<div class="paramButton" on:click={() => load("corr")}>Load K</div>
+		<div class="paramButton" on:click={() => loadCorrTable()}>Load K</div>
 
 		<div class="paramButton" on:click={newRow}>New row</div>
 
