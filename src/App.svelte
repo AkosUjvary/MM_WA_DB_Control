@@ -25,20 +25,101 @@
 
 	let editTable: ITable = { rows: [], keys: [] };
 	let maxTableID=0;
-	export let selectedTable: ITable = { rows: [], keys: [] }
+	let selectedTable: ITable = { rows: [], keys: [] }
+
+	let corrTable: ITable = { rows: [], keys: [] }
+
+	let loadCorrBaseTable: ITable = { rows: [], keys: [] }
+
+	
+	
 	let files = [];
 
 	$: selectedTable, max_width(selectedTable, 'view');
+	
+	$: if((corrTable.keys).length>0) { saveCorrTableFromAddNewRow()};
+
+
+	function saveCorrTableFromAddNewRow() {
+		service.loadCorr().then((response) => {
+			if (response.ok) {
+				response.json().then((result) => {
+										
+					let saveTableCorr: ITable = { rows: [], keys: [] }
+					saveTableCorr.keys=corrTable.keys.splice(1,corrTable.keys.length)
+					for (var i in corrTable.rows){
+						saveTableCorr.rows.push({})
+							for (var x in corrTable.rows[i]) {								
+								if (x != "corr_row_id") {
+									saveTableCorr.rows[i][x]= corrTable.rows[i][x]																		
+								}
+							}							   
+						}
+					if (result.length>0) {
+						const keys =Object.keys(result[0]);									
+						loadCorrBaseTable = { rows: result, keys: keys };
+						saveTableCorr.rows=loadCorrBaseTable.rows.concat(saveTableCorr.rows);
+					}					
+					
+					service.saveAddedCorr(JSON.stringify(saveTableCorr.rows)).then((response) => {
+						if (response.ok) {
+							alert("Hozzáadás korrekció táblába sikeres!");
+						}
+					loadCorrTable();
+		});
+
+		corrTable={ rows: [], keys: [] };
+
+				});
+			}
+		});
+
+		
+	}
+
+	function saveCorr() {
+		let saveTable={...editTable}
+		
+		saveTable.keys=saveTable.keys.filter(keys=> keys !="editor_row_id")
+
+		for (var i in saveTable.rows){
+					delete saveTable.rows[i].editor_row_id
+			}
+
+		service.saveCorr(JSON.stringify(saveTable.rows)).then((response) => {
+			if (response.ok) {
+				alert("Korrekció tábla mentés sikeres!");
+			}
+		});
+	}
+ 
+	function loadCorrTable() {
+		service.loadCorr().then((response) => {
+			if (response.ok) {
+				response.json().then((result) => {
+					if (result.length>0) {
+						const keys =["editor_row_id"].concat(Object.keys(result[0]));
+						const rowsWithID = result.map((row, index) =>  { return {
+								 "editor_row_id": (parseInt(index) + 1).toString(), ...row
+							}});
+						editTable = { rows: rowsWithID, keys: keys };
+						maxTableID=editTable.rows.length;
+						max_width(editTable, 'edit');
+					}
+					else {alert("Korrekciós tábla nem található!")}
+				});
+			}
+		});
+	}
 
 	function loadParameters() {
 		service.loadParam().then((response) => {
 			if (response.ok) {
 				response.json().then((result) => {
 					const keys =["editor_row_id"].concat(Object.keys(result[0]));
-					let rowsWithID = [...result];
-					for (var i in rowsWithID){
-						rowsWithID[i]=Object.assign({}, {"editor_row_id":(parseInt(i)+1).toString()}, rowsWithID[i])
-					}
+					const rowsWithID = result.map((row, index) =>  { return {
+								 "editor_row_id": (parseInt(index) + 1).toString(), ...row
+							}});				
 					editTable = { rows: rowsWithID, keys: keys };
 					maxTableID=editTable.rows.length;
 					max_width(editTable, 'edit');
@@ -52,10 +133,11 @@
 			if (response.ok) {
 				response.json().then((result) => {
 					const keys =["editor_row_id"].concat(Object.keys(result[0]));
-					let rowsWithID = [...result];
-					for (var i in rowsWithID){
-						rowsWithID[i]=Object.assign({}, {"editor_row_id":(parseInt(i)+1).toString()}, rowsWithID[i])
-					}
+
+					const rowsWithID = result.map((row, index) =>  { return {
+								 "editor_row_id": (parseInt(index) + 1).toString(), ...row
+							}});
+
 					editTable = { rows: rowsWithID, keys: keys };
 					maxTableID=editTable.rows.length;
 					max_width(editTable, 'edit');
@@ -92,18 +174,10 @@
         });
 	}
 
-	function load(table) {
-		if (table=="parameter"){			
-			loadParameters();				
-		}
-		else if (table=="mapping") {
-			loadMapping();
-		}
-	}
-
 	function saveParam() {
-		let saveTable={...editTable}
-		saveTable.keys=saveTable.keys.splice(1,saveTable.keys.length)
+		let saveTable={...editTable}		
+		saveTable.keys=saveTable.keys.filter(keys=> keys !="editor_row_id")
+
 		for (var i in saveTable.rows){
 					delete saveTable.rows[i].editor_row_id
 			}
@@ -114,6 +188,8 @@
 			}
 		});
 	}
+
+	let rowType:string;
 
 	let min_width_class_edit:{};
 	let min_width_class_view:{};
@@ -161,7 +237,8 @@
 
 	function saveMapping() {
 		let saveTable={...editTable}
-		saveTable.keys=saveTable.keys.splice(1,saveTable.keys.length)
+		saveTable.keys=saveTable.keys.filter(keys=> keys !="editor_row_id")
+ 
 		for (var i in saveTable.rows){
 					delete saveTable.rows[i].editor_row_id
 			}
@@ -185,16 +262,19 @@
 		<h3>MM DB LOADER control panel</h3>
 		<h4>Edit Parameters:</h4>
 		<div class="paramButton" on:click={saveParam}>Save P</div>
-		<div class="paramButton" on:click={() => load("parameter")}>Load P</div>
+		<div class="paramButton" on:click={() => loadParameters()}>Load P</div>
 
 		<div class="paramButton" on:click={saveMapping}>Save M</div>
-		<div class="paramButton" on:click={() => load("mapping")}>Load M</div>
+		<div class="paramButton" on:click={() => loadMapping()}>Load M</div>
+
+		<div class="paramButton" on:click={saveCorr}>Save K</div>
+		<div class="paramButton" on:click={() => loadCorrTable()}>Load K</div>
 
 		<div class="paramButton" on:click={newRow}>New row</div>
 
 	</div>
 	<div id="container_2">
-		<Table bind:data={editTable} bind:min_width_class={min_width_class_edit} rowType="edit"/>
+		<Table bind:data={editTable} bind:min_width_class={min_width_class_edit} rowType="edit" bind:corrTable={corrTable}/>
 	</div>
 
 	<div id="container_3"><h4>View Files:</h4></div>
@@ -211,11 +291,11 @@
 				<tr><td><div class="td_Sel" on:click={() => loadFiles("output/filmlist_omdb")}>Output / Omdb List</div></td></tr>				
 			</table>
 		</div>
-		<FileList bind:files={files} bind:folder={currentFolder} bind:selectedTable={selectedTable}></FileList>
+		<FileList bind:files={files} bind:folder={currentFolder} bind:selectedTable={selectedTable} bind:rowType={rowType}></FileList>
 	</div>
 	<div id="container_5" />
 	<div id="container_6">
-		<Table data={selectedTable} min_width_class={min_width_class_view} rowType="view" />
+		<Table data={selectedTable} min_width_class={min_width_class_view} rowType={rowType} bind:corrTable={corrTable} />
 	</div>
 
 	<div id="container_7">MM - 2022</div>
