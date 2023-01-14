@@ -299,5 +299,4 @@
 	</div>
 
 	<div id="container_7">MM - 2022</div>
-	Dezsőkém
 </div>
