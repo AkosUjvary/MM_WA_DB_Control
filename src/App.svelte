@@ -298,5 +298,5 @@
 		<Table data={selectedTable} min_width_class={min_width_class_view} rowType={rowType} bind:corrTable={corrTable} />
 	</div>
 
-	<div id="container_7">MM - 2022</div>
+	<div id="container_7">MM - 2023</div>
 </div>
