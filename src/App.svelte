@@ -22,7 +22,7 @@
 		}
 	}
 
-
+	let loadedTable='';
 	let editTable: ITable = { rows: [], keys: [] };
 	let maxTableID=0;
 	let selectedTable: ITable = { rows: [], keys: [] }
@@ -31,8 +31,6 @@
 
 	let loadCorrBaseTable: ITable = { rows: [], keys: [] }
 
-	
-	
 	let files = [];
 
 	$: selectedTable, max_width(selectedTable, 'view');
@@ -77,27 +75,63 @@
 		
 	}
 
-	function saveCorr() {
-		let saveTable={...editTable}
+
+	function saveTable(){
+		if (loadedTable !=''){
+			let saveTable={...editTable}
+			
+			saveTable.keys=saveTable.keys.filter(keys=> keys !="editor_row_id")
+
+			for (var i in saveTable.rows){
+						delete saveTable.rows[i].editor_row_id
+				}
+			switch (loadedTable) {
+			case 'correction':
+				service.saveCorr(JSON.stringify(saveTable.rows)).then((response) => {
+					if (response.ok) {
+						alert("Correction mentés sikeres!");
+					}
+				});
+				break;
+			case 'parameter':
+				service.saveParam(JSON.stringify(editTable.rows)).then((response) => {
+					if (response.ok) {
+						alert("Process mentés sikeres!");
+					}
+				});
+				break;
+			case 'mapping':
+				service.saveMapping(JSON.stringify(editTable.rows)).then((response) => {
+					if (response.ok) {
+						alert("Mapping mentés sikeres!");
+					}
+				});
+				break;
+			case 'scheduler':
+				service.saveSched(JSON.stringify(editTable.rows)).then((response) => {
+					if (response.ok) {
+						alert("Scheduler mentés sikeres!");
+					}
+				});
+				break;
+			}
+
+		}
+		else {
+			alert("Nincs betöltött tábla");
+		}	   
 		
-		saveTable.keys=saveTable.keys.filter(keys=> keys !="editor_row_id")
+	} 
 
-		for (var i in saveTable.rows){
-					delete saveTable.rows[i].editor_row_id
-			}
-
-		service.saveCorr(JSON.stringify(saveTable.rows)).then((response) => {
-			if (response.ok) {
-				alert("Korrekció tábla mentés sikeres!");
-			}
-		});
-	}
  
-	function loadCorrTable() {
+ 
+	function loadCorrTable() {		
 		service.loadCorr().then((response) => {
-			if (response.ok) {
+			if (response.ok) {				
 				response.json().then((result) => {
 					if (result.length>0) {
+						activeBtn('C');
+						loadedTable='correction';
 						const keys =["editor_row_id"].concat(Object.keys(result[0]));
 						const rowsWithID = result.map((row, index) =>  { return {
 								 "editor_row_id": (parseInt(index) + 1).toString(), ...row
@@ -112,10 +146,33 @@
 		});
 	}
 
-	function loadParameters() {
+	function loadScheduler() {
+		service.loadSched().then((response) => {
+			if (response.ok) {
+				response.json().then((result) => {
+					if (result.length>0) {
+						activeBtn('S');
+						loadedTable='scheduler';
+						const keys =["editor_row_id"].concat(Object.keys(result[0]));
+						const rowsWithID = result.map((row, index) =>  { return {
+								 "editor_row_id": (parseInt(index) + 1).toString(), ...row
+							}});
+						editTable = { rows: rowsWithID, keys: keys };
+						maxTableID=editTable.rows.length;
+						max_width(editTable, 'edit');
+					}
+					else {alert("Scheduler tábla nem található!")}
+				});
+			}
+		});
+	}
+
+	function loadParameters() {		
 		service.loadParam().then((response) => {
 			if (response.ok) {
 				response.json().then((result) => {
+					activeBtn('P');
+					loadedTable='parameter';
 					const keys =["editor_row_id"].concat(Object.keys(result[0]));
 					const rowsWithID = result.map((row, index) =>  { return {
 								 "editor_row_id": (parseInt(index) + 1).toString(), ...row
@@ -132,6 +189,8 @@
 		service.loadMapping().then((response) => {
 			if (response.ok) {
 				response.json().then((result) => {
+					loadedTable='mapping';
+					activeBtn('M');
 					const keys =["editor_row_id"].concat(Object.keys(result[0]));
 
 					const rowsWithID = result.map((row, index) =>  { return {
@@ -174,20 +233,8 @@
         });
 	}
 
-	function saveParam() {
-		let saveTable={...editTable}		
-		saveTable.keys=saveTable.keys.filter(keys=> keys !="editor_row_id")
 
-		for (var i in saveTable.rows){
-					delete saveTable.rows[i].editor_row_id
-			}
-
-		service.saveParam(JSON.stringify(editTable.rows)).then((response) => {
-			if (response.ok) {
-				alert("Mentés sikeres!");
-			}
-		});
-	}
+	
 
 	let rowType:string;
 
@@ -234,21 +281,28 @@
 		}
 	}
 
-
-	function saveMapping() {
-		let saveTable={...editTable}
-		saveTable.keys=saveTable.keys.filter(keys=> keys !="editor_row_id")
+let act_P, act_M, act_C, act_S='';
  
-		for (var i in saveTable.rows){
-					delete saveTable.rows[i].editor_row_id
-			}
-
-		service.saveMapping(JSON.stringify(editTable.rows)).then((response) => {
-			if (response.ok) {
-				alert("Mentés sikeres!");
-			}
-		});
-	}
+		function activeBtn(btn) {
+			switch (btn) {
+			case 'P':
+				act_P='activeButton';
+				act_M=''; act_C=''; act_S='';
+				break; 
+			case 'M':
+				act_M='activeButton';
+				act_P=''; act_C=''; act_S='';
+				 break; 
+			case 'C':
+				act_C='activeButton';
+				act_M=''; act_P=''; act_S='';
+				 break; 
+			case 'S':
+				act_S='activeButton';
+				act_M=''; act_C=''; act_P='';
+				 break; 
+				}
+		}
 
 </script>
 
@@ -259,16 +313,17 @@
 		<p>Welcome {userInfo && userInfo.userDetails} ({userInfo && userInfo.identityProvider})</p>
 		</div>
 		{/if}
-		<h3>MM DB LOADER control panel</h3>
-		<h4>Edit Parameters:</h4>
-		<div class="paramButton" on:click={saveParam}>Save P</div>
-		<div class="paramButton" on:click={() => loadParameters()}>Load P</div>
-
-		<div class="paramButton" on:click={saveMapping}>Save M</div>
-		<div class="paramButton" on:click={() => loadMapping()}>Load M</div>
-
-		<div class="paramButton" on:click={saveCorr}>Save K</div>
-		<div class="paramButton" on:click={() => loadCorrTable()}>Load K</div>
+		<h3>MM DB LOADER Control panel</h3>
+	 
+			<div class="tableLoaderMenu">	
+				<h6>Load Table:</h6>
+				<div class="paramButton {act_P}" on:click={() => loadParameters()}>Process</div>
+				<div class="paramButton {act_M}" on:click={() => loadMapping()}>Mapping</div>
+				<div class="paramButton {act_C}" on:click={() => loadCorrTable()}>Correction</div>
+				<div class="paramButton {act_S}" on:click={() => loadScheduler()}>Scheduler</div>
+			</div>
+		
+		<div class="paramButton" on:click={saveTable}>Save</div>
 
 		<div class="paramButton" on:click={newRow}>New row</div>
 

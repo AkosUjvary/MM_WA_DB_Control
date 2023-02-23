@@ -29,19 +29,44 @@ body {
     height: 180px;
     background-color: rgb(234, 234, 234);
   }
+
+  h6 {
+    font-size: medium;
+    color:white;
+    margin: 5px;
+  }
+
   
-  
+  .tableLoaderMenu {
+     
+    position:relative;    
+    width:460px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:10px;
+    padding-bottom:10px;
+    background-color: rgb(150, 150, 150);
+    border-radius: 7px;
+  }
+
+ 
   .paramButton {
     width: 80px;
     background-color: rgb(95, 95, 95);
     text-align: center;
     padding-top: 5;
     padding-bottom: 5;
+    padding-left:10px;
+    padding-right:10px;
     margin: 4px 4px;
     cursor: pointer;
     display: inline-block;
     color:white;
     border-radius: 8px;
+  }
+
+  .activeButton {
+    background-color: rgb(53, 122, 108)
   }
 
   .loginButton {
@@ -125,7 +150,6 @@ body {
     text-align: center;
   }
   
-  
   .table thead {
     position: sticky;
     top: 0;
@@ -158,8 +182,8 @@ body {
     min-width: 150px;
   }
 
-  .td_min_234 {
-    min-width: 234px;
+  .td_min_200 {
+    min-width: 200px;
   }
 
   .td_min_300 {
@@ -192,3 +216,5 @@ body {
     width: 100%;
     box-sizing: border-box;
   }
+
+
