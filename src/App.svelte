@@ -4,17 +4,16 @@
 	import { service } from "./service";
     import FileList from "./components/FileList.svelte";
 	import { onMount } from 'svelte';
-    import { xlink_attr } from "svelte/internal";
-
 
 	enum ActiveButton {
+		None,
 		Process,
 		Mapping,
 		Correction,
 		Scheduler
 	}
 
-	let activeButton: ActiveButton = ActiveButton.Process;//ide rakj valami init értéket
+	let activeButton: ActiveButton = ActiveButton.None;
 	let userInfo = undefined;
 
 	onMount(async () => (userInfo = await getUserInfo()));
@@ -303,10 +302,10 @@
 	 
 			<div class="tableLoaderMenu">	
 				<h6>Load Table:</h6>
-				<button class="paramButton" disabled={activeButton !== ActiveButton.Process} on:click={() => loadParameters()}>Process</button>
-				<button class="paramButton" disabled={activeButton !== ActiveButton.Mapping} on:click={() => loadMapping()}>Mapping</button>
-				<button class="paramButton" disabled={activeButton !== ActiveButton.Correction} on:click={() => loadCorrTable()}>Correction</button>
-				<button class="paramButton" disabled={activeButton !== ActiveButton.Scheduler} on:click={() => loadScheduler()}>Scheduler</button>
+				<button class="paramButton" class:activeButton={activeButton === ActiveButton.Process} on:click={() => loadParameters()}>Process</button>
+				<button class="paramButton" class:activeButton={activeButton === ActiveButton.Mapping} on:click={() => loadMapping()}>Mapping</button>
+				<button class="paramButton" class:activeButton={activeButton === ActiveButton.Correction} on:click={() => loadCorrTable()}>Correction</button>
+				<button class="paramButton" class:activeButton={activeButton === ActiveButton.Scheduler} on:click={() => loadScheduler()}>Scheduler</button>
 			</div>
 		
 		<div class="paramButton" on:click={saveTable}>Save</div>

@@ -65,7 +65,7 @@ body {
     border-radius: 8px;
   }
 
-  button:enabled {
+  .activeButton {
     background-color: rgb(53, 122, 108)
   }
 
