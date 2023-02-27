@@ -21,12 +21,10 @@ body {
   }
 
   #container_1 {
-  
     padding-top: 20px;
     margin: auto;
     padding-left: 100px;
     padding-right: 100px;
-    height: 180px;
     background-color: rgb(234, 234, 234);
   }
 
