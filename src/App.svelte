@@ -4,7 +4,18 @@
 	import { service } from "./service";
     import FileList from "./components/FileList.svelte";
 	import { onMount } from 'svelte';
-    import { xlink_attr } from "svelte/internal";
+    import ProcessInfoTable from "./components/ProcessInfoTable.svelte";
+
+
+	enum ActiveButton {
+		None,
+		Process,
+		Mapping,
+		Correction,
+		Scheduler
+	}
+	let activeButton: ActiveButton = ActiveButton.None;
+ 
 
 	let userInfo = undefined;
 
@@ -123,14 +134,13 @@
 		
 	} 
 
- 
- 
+
 	function loadCorrTable() {		
 		service.loadCorr().then((response) => {
 			if (response.ok) {				
 				response.json().then((result) => {
 					if (result.length>0) {
-						activeBtn('C');
+						activeButton=ActiveButton.Correction;
 						loadedTable='correction';
 						const keys =["editor_row_id"].concat(Object.keys(result[0]));
 						const rowsWithID = result.map((row, index) =>  { return {
@@ -151,7 +161,7 @@
 			if (response.ok) {
 				response.json().then((result) => {
 					if (result.length>0) {
-						activeBtn('S');
+						activeButton=ActiveButton.Scheduler;
 						loadedTable='scheduler';
 						const keys =["editor_row_id"].concat(Object.keys(result[0]));
 						const rowsWithID = result.map((row, index) =>  { return {
@@ -171,7 +181,7 @@
 		service.loadParam().then((response) => {
 			if (response.ok) {
 				response.json().then((result) => {
-					activeBtn('P');
+					activeButton=ActiveButton.Process;
 					loadedTable='parameter';
 					const keys =["editor_row_id"].concat(Object.keys(result[0]));
 					const rowsWithID = result.map((row, index) =>  { return {
@@ -190,7 +200,7 @@
 			if (response.ok) {
 				response.json().then((result) => {
 					loadedTable='mapping';
-					activeBtn('M');
+					activeButton=ActiveButton.Mapping;
 					const keys =["editor_row_id"].concat(Object.keys(result[0]));
 
 					const rowsWithID = result.map((row, index) =>  { return {
@@ -281,28 +291,7 @@
 		}
 	}
 
-let act_P, act_M, act_C, act_S='';
- 
-		function activeBtn(btn) {
-			switch (btn) {
-			case 'P':
-				act_P='activeButton';
-				act_M=''; act_C=''; act_S='';
-				break; 
-			case 'M':
-				act_M='activeButton';
-				act_P=''; act_C=''; act_S='';
-				 break; 
-			case 'C':
-				act_C='activeButton';
-				act_M=''; act_P=''; act_S='';
-				 break; 
-			case 'S':
-				act_S='activeButton';
-				act_M=''; act_C=''; act_P='';
-				 break; 
-				}
-		}
+
 
 </script>
 
@@ -317,15 +306,16 @@ let act_P, act_M, act_C, act_S='';
 	 
 			<div class="tableLoaderMenu">	
 				<h6>Load Table:</h6>
-				<div class="paramButton {act_P}" on:click={() => loadParameters()}>Process</div>
-				<div class="paramButton {act_M}" on:click={() => loadMapping()}>Mapping</div>
-				<div class="paramButton {act_C}" on:click={() => loadCorrTable()}>Correction</div>
-				<div class="paramButton {act_S}" on:click={() => loadScheduler()}>Scheduler</div>
+				<button class="paramButton" class:activeButton={activeButton === ActiveButton.Process} on:click={() => loadParameters()}>Process</button>
+				<button class="paramButton" class:activeButton={activeButton === ActiveButton.Mapping} on:click={() => loadMapping()}>Mapping</button>
+				<button class="paramButton" class:activeButton={activeButton === ActiveButton.Correction} on:click={() => loadCorrTable()}>Correction</button>
+				<button class="paramButton" class:activeButton={activeButton === ActiveButton.Scheduler} on:click={() => loadScheduler()}>Scheduler</button>
+
 			</div>
 		
-		<div class="paramButton" on:click={saveTable}>Save</div>
+		<div class="editButton" on:click={saveTable}>Save</div>
 
-		<div class="paramButton" on:click={newRow}>New row</div>
+		<div class="editButton" on:click={newRow}>New row</div>
 
 	</div>
 	<div id="container_2">
