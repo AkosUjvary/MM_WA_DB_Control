@@ -4,7 +4,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     color: rgb(88, 88, 88);
   }
-  
+
   #main {
     padding: 0;
     width: 100%;
@@ -29,19 +29,65 @@ body {
     height: 180px;
     background-color: rgb(234, 234, 234);
   }
+
+  h6 {
+    font-size: medium;
+    color:white;
+    margin: 5px;
+  }
+
   
-  
+  .tableLoaderMenu {
+     
+    position:relative;    
+    width:460px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:10px;
+    padding-bottom:10px;
+    background-color: rgb(150, 150, 150);
+    border-radius: 7px;
+  }
+
+
   .paramButton {
-    width: 80px;
+    width: 100px;
     background-color: rgb(95, 95, 95);
     text-align: center;
-    padding-top: 5;
-    padding-bottom: 5;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+ 
     margin: 4px 4px;
     cursor: pointer;
     display: inline-block;
     color:white;
     border-radius: 8px;
+    font-size: 15px;
+    border: none;
+  }
+
+  .editButton {
+    width: 60px;
+    background-color: rgb(95, 95, 95);
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+ 
+    margin: 8px 1px;
+    cursor: pointer;
+    display: inline-block;
+    color:white;
+    border-radius: 8px;
+    font-size: 15px;
+    border: none;
+  }
+ 
+  .activeButton {
+    background-color: rgb(53, 122, 108)
   }
 
   .loginButton {
@@ -57,15 +103,12 @@ body {
     border-radius: 8px;
   }
   
-  
-  
   #container_2 {
     margin: auto;
     padding-left: 100px;
     padding-right: 100px;
     background-color:  rgb(234, 234, 234);
   }
-  
   
   #container_3 {
     margin: auto;
@@ -125,7 +168,6 @@ body {
     text-align: center;
   }
   
-  
   .table thead {
     position: sticky;
     top: 0;
@@ -158,8 +200,8 @@ body {
     min-width: 150px;
   }
 
-  .td_min_234 {
-    min-width: 234px;
+  .td_min_200 {
+    min-width: 200px;
   }
 
   .td_min_300 {
@@ -171,7 +213,6 @@ body {
   }
   
   
-
   .table .tr-inputs th {
     position: relative;
     padding: 0;
@@ -192,3 +233,5 @@ body {
     width: 100%;
     box-sizing: border-box;
   }
+
+

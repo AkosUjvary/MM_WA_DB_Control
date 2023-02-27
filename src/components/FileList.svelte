@@ -36,7 +36,8 @@
 
     function deleteBlob(file) {
         
-        if(file.toString()!="load_to_DB/stage_mapping"){
+        if(file.toString()!="load_to_DB/stage_mapping"
+        && file.toString()!="load_to_DB/scheduler"){
         service.deleteBlob({"file": file}).then((response)=>{
             if(response.ok){
                 alert("Törlés sikeres! ("+file.toString()+")")

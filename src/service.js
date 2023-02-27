@@ -17,6 +17,12 @@ export const service = {
     loadCorr: () => {
         return fetch(encodeURI(BASE_URL + "fnc=lcorrections"), { method: 'post' });
     },
+    loadSched: () => {
+        return fetch(encodeURI(BASE_URL + "fnc=lsched"), { method: 'post' });
+    },
+    saveSched: (body) => {
+        return fetch(encodeURI(BASE_URL + "fnc=ssched"), { method: 'post', body: JSON.stringify(body) });
+    },
     saveCorr: (body) => {
         return fetch(encodeURI(BASE_URL + "fnc=scorrections"), { method: 'post', body: JSON.stringify(body) });
     },
